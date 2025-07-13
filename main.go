@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"linkedlist/linkedlist"
+	"list/list"
 	"strconv"
 )
 
@@ -12,6 +11,10 @@ type Customer struct {
 	age         int
 	email       string
 	phoneNumber string
+}
+
+type Test struct {
+	data string
 }
 
 func (customer Customer) String() string {
@@ -30,27 +33,31 @@ func main() {
 		phoneNumber: "(769) 257-8744",
 	}
 	customer2 := Customer{
-		firstName:   "Brandon",
-		lastName:    "Biernat",
+		firstName:   "Molly",
+		lastName:    "Kirby",
 		age:         2,
-		email:       "biernat.brandon@yahoo.com",
+		email:       "Kirby.Molly@yahoo.com",
 		phoneNumber: "(769) 257-8744",
 	}
 	customer3 := Customer{
-		firstName:   "Brandon",
-		lastName:    "Biernat",
+		firstName:   "William",
+		lastName:    "Wu",
 		age:         3,
-		email:       "biernat.brandon@yahoo.com",
+		email:       "Wu.William@yahoo.com",
 		phoneNumber: "(769) 257-8744",
 	}
 
-	list := linkedlist.List[Customer]{}
-	list.Push(customer1)
-	list.Push(customer2)
-	list.Print()
+	customerList := list.New[Customer]()
+	customerList.Push(customer1)
+	customerList.Push(customer2)
+	customerList.Push(customer3)
 
-	list.Insert(customer3, 2)
-	list.Print()
-	message := fmt.Sprintf("Length: %d", list.Length())
-	fmt.Println(message)
+	customerList2 := list.New[Customer]()
+	customerList2.Push(customer1)
+	customerList2.Push(customer2)
+	customerList2.Push(customer3)
+
+	newList := customerList.Concat(*customerList2)
+
+	newList.Print()
 }

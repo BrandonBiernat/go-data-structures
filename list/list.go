@@ -1,4 +1,4 @@
-package linkedlist
+package list
 
 import (
 	"errors"
@@ -12,11 +12,19 @@ type node[T any] struct {
 
 type List[T any] struct {
 	head *node[T]
+	tail *node[T]
 }
 
 // Create an empty new list
 func New[T any]() *List[T] {
 	return &List[T]{}
+}
+
+func NewFromList[T any](fromList List[T]) *List[T] {
+	return &List[T]{
+		head: fromList.head,
+		tail: fromList.tail,
+	}
 }
 
 // Get length of list
@@ -45,22 +53,20 @@ func (list *List[T]) Print() {
 	}
 }
 
-// Add new node to the end of the list
+// Add a new value to the end of the list
 func (list *List[T]) Push(value T) {
 	node := &node[T]{data: value}
 
 	if list.head == nil {
 		list.head = node
+		list.tail = node
 	} else {
-		temp := list.head
-		for temp.next != nil {
-			temp = temp.next
-		}
-		temp.next = node
+		list.tail.next = node
+		list.tail = node
 	}
 }
 
-// Remove last node in the list
+// Remove last value in the list
 func (list *List[T]) Pop() error {
 	if list.head == nil {
 		return errors.New("list is empty")
@@ -68,18 +74,20 @@ func (list *List[T]) Pop() error {
 
 	if list.head.next == nil {
 		list.head = nil
+		list.tail = nil
 	} else {
 		temp := list.head
 		for temp.next.next != nil {
 			temp = temp.next
 		}
 		temp.next = nil
+		list.tail = temp
 	}
 
 	return nil
 }
 
-// Insert node into the list at the given index
+// Insert value into the list at the given index
 func (list *List[T]) Insert(value T, index int) error {
 	if index < 1 {
 		return errors.New("invalid index")
@@ -107,4 +115,37 @@ func (list *List[T]) Insert(value T, index int) error {
 	}
 
 	return nil
+}
+
+// For every value execute the provided function
+func (list *List[T]) ForEach(fn func(data T)) {
+	for curr := list.head; curr != nil; curr = curr.next {
+		fn(curr.data)
+	}
+}
+
+// Concatenates two lists into one new list
+func (list *List[T]) Concat(value List[T]) *List[T] {
+	newList := New[T]()
+
+	for curr := list.head; curr != nil; curr = curr.next {
+		newList.Push(curr.data)
+	}
+
+	for curr := value.head; curr != nil; curr = curr.next {
+		newList.Push(curr.data)
+	}
+
+	return newList
+}
+
+// For every value execute the provided function and return a value of the specified type
+func Select[T any, R any](list *List[T], fn func(data T) R) *List[R] {
+	newList := New[R]()
+
+	for curr := list.head; curr != nil; curr = curr.next {
+		newList.Push(fn(curr.data))
+	}
+
+	return newList
 }
